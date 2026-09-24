@@ -633,10 +633,34 @@ body.reader-mode .footer{
   }
 }
 
+
+/* ===== MOBILE-FRIENDLY HEADER + READER FIX v20 ===== */
+html,body{overflow-x:hidden}
+.home-brand{position:absolute;top:7%;left:5%;right:5%;z-index:6;text-align:center;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:6px}
+.home-brand .brand-line{display:block;width:min(92%,760px);padding:5px 12px;border-radius:14px;background:rgba(255,255,255,.84);border:1px solid rgba(255,255,255,.72);box-shadow:0 5px 16px rgba(0,0,0,.12);color:#102f50;font-weight:900;line-height:1.3;font-size:clamp(13px,2vw,25px);white-space:normal}
+.home-brand .brand-title{display:block;width:min(94%,820px);margin-top:2px;padding:8px 14px;border-radius:18px;background:rgba(255,255,255,.88);border:1px solid rgba(255,255,255,.78);box-shadow:0 8px 22px rgba(0,0,0,.16);color:#b11616;font-weight:950;line-height:1.2;font-size:clamp(24px,3.8vw,46px)}
+body.reader-mode{overflow-y:auto!important;overflow-x:hidden!important;height:auto!important;min-height:100%!important}
+body.reader-mode .wrap{overflow:visible!important}
+body.reader-mode #reader{padding-bottom:30px!important}
+@media(max-width:700px){
+  html,body{height:100%}
+  body.home-mode{overflow:hidden!important}
+  body.home-mode .home-brand{top:7%;left:3%;right:3%;gap:4px}
+  body.home-mode .home-brand .brand-line{width:100%;padding:4px 7px;border-radius:10px;font-size:12px;line-height:1.25}
+  body.home-mode .home-brand .brand-title{width:100%;padding:6px 8px;border-radius:12px;font-size:22px;line-height:1.15}
+  body.home-mode .tools{top:25%!important;left:7px!important;right:7px!important}
+  body.home-mode .search input{height:42px!important;font-size:12px!important;border-radius:13px!important}
+  body.home-mode .install-app{top:30.5%!important;right:50%!important;transform:translateX(50%)!important;font-size:12px!important;padding:7px 15px!important}
+  body.home-mode #chapters{padding:35vh 1.2vw 12vh!important;grid-template-columns:30vw 40vw 30vw!important;row-gap:6px!important}
+  body.home-mode #chapters .chapter{border-radius:11px!important;padding:6px 4px!important}
+  body.home-mode #chapters .chapter h3{font-size:9px!important;line-height:1.18!important}
+  body.reader-mode .wrap{padding:0 8px 40px!important}
+  body.reader-mode .reader-head{position:sticky!important;top:0!important;z-index:50!important}
+}
 </style>
 </head>
 <body>
-<header class="hero"><img class="hero-banner" src="school-banner.png" alt="ثانوية معركة 11 فيفري 1960 تصافت — النظام الداخلي للمؤسسة"><div class="hero-inner"><div class="hero-tools"><button class="round" id="theme" aria-label="المظهر">☾</button></div></div></header>
+<header class="hero"><img class="hero-banner" src="school-banner.png" alt="خلفية المؤسسة"><div class="hero-inner"><div class="home-brand" aria-label="هوية النظام"><div class="brand-line">الجمهورية الجزائرية الديمقراطية الشعبية</div><div class="brand-line">وزارة التربية الوطنية</div><div class="brand-title">النظام الداخلي الموحد</div></div><div class="hero-tools"><button class="round" id="theme" aria-label="المظهر">☾</button></div></div></header>
 <main class="wrap">
 <section class="panel tools"><div class="search"><span class="search-icon">⌕</span><input id="q" type="search" placeholder="ابحث عن مادة أو كلمة أو موضوع…" autocomplete="off"><button class="clear" id="clear">×</button></div><div class="actions"><button class="btn primary" id="home">⌂ الفصول</button><button class="btn" id="install" hidden>＋ تثبيت التطبيق</button><button class="btn" id="smaller">A− تصغير النص</button><button class="btn" id="larger">A＋ تكبير النص</button></div></section>
 <section id="homeView"><div class="heading"><div><h2>فصول النظام الداخلي</h2><p>وصول سريع ومنظم إلى المواد الخمس والخمسين</p></div><span class="pill">55 مادة</span></div><button id="installApp" class="install-app" type="button" hidden>تثبيت التطبيق</button>
@@ -658,14 +682,47 @@ const data=parse();
 const $=x=>document.getElementById(x);const homeView=$('homeView'),searchView=$('searchView'),reader=$('reader');
 function esc(s){return s.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function render(){const el=$('chapters');el.innerHTML='';data.forEach((c,i)=>{const info=chapterInfo[i];const title=c.full.trim();const b=document.createElement('button');b.className='chapter';b.innerHTML=`<div class="chapter-top"><span class="num">${i+1}</span></div><h3>${esc(title)}</h3>`;b.onclick=()=>open(i);el.appendChild(b)})}
-function open(i){document.body.classList.remove('home-mode');document.body.classList.add('reader-mode');const c=data[i],info=chapterInfo[i];$('badge').textContent=i+1;$('readerTitle').textContent=info[0];$('readerMeta').textContent=`الفصل ${i+1} · ${c.articles.length} مادة`;$('articles').innerHTML=c.articles.map((a,ai)=>`<article class="article" id="article-${a.n}"><div class="article-head"><span class="article-number">${a.n}</span><span>المادة ${a.n}</span></div><div class="article-body">${a.lines.map((x,j)=>{const bullet=/^[*•]/.test(x);return `<p class="${bullet?'bullet':''}">${esc(x.replace(/^[*•]\s*/,''))}</p>`}).join('')}</div></article>`).join('')+`<div class="reader-nav"><button onclick="open(${Math.max(0,i-1)})" ${i===0?'disabled':''}>→ الفصل السابق</button><button onclick="open(${Math.min(data.length-1,i+1)})" ${i===data.length-1?'disabled':''}>الفصل التالي ←</button></div>`;homeView.hidden=true;searchView.hidden=true;reader.hidden=false;window.scrollTo(0,0)}
-function goHome(){reader.hidden=true;searchView.hidden=true;homeView.hidden=false;document.body.classList.remove('reader-mode');document.body.classList.add('home-mode');window.scrollTo(0,0)}
+function open(i){document.body.classList.remove('home-mode');document.body.classList.add('reader-mode');const c=data[i],info=chapterInfo[i];$('badge').textContent=i+1;$('readerTitle').textContent=info[0];$('readerMeta').textContent=`الفصل ${i+1} · ${c.articles.length} مادة`;$('articles').innerHTML=c.articles.map((a,ai)=>`<article class="article" id="article-${a.n}"><div class="article-head"><span class="article-number">${a.n}</span><span>المادة ${a.n}</span></div><div class="article-body">${a.lines.map((x,j)=>{const bullet=/^[*•]/.test(x);return `<p class="${bullet?'bullet':''}">${esc(x.replace(/^[*•]\s*/,''))}</p>`}).join('')}</div></article>`).join('')+`<div class="reader-nav"><button onclick="open(${Math.max(0,i-1)})" ${i===0?'disabled':''}>→ الفصل السابق</button><button onclick="open(${Math.min(data.length-1,i+1)})" ${i===data.length-1?'disabled':''}>الفصل التالي ←</button></div>`;homeView.hidden=true;searchView.hidden=true;reader.hidden=false;document.documentElement.scrollTop=0;document.body.scrollTop=0;window.scrollTo({top:0,left:0,behavior:'instant'})}
+function goHome(){reader.hidden=true;searchView.hidden=true;homeView.hidden=false;document.body.classList.remove('reader-mode');document.body.classList.add('home-mode');document.documentElement.scrollTop=0;document.body.scrollTop=0;window.scrollTo({top:0,left:0,behavior:'instant'})}
 function highlight(text,q){let s=esc(text);q.split(/\s+/).filter(Boolean).slice(0,5).forEach(w=>{const z=esc(w);s=s.replace(new RegExp(`(${z})`,'gi'),'<mark>$1</mark>')});return s}
-function doSearch(v){const q=v.trim().toLowerCase();if(!q){goHome();return}let hits=[];data.forEach((c,ci)=>c.articles.forEach(a=>{const txt=a.lines.join(' ');if(txt.toLowerCase().includes(q)||String(a.n)===q)hits.push({ci,a,txt})}));document.body.classList.remove('home-mode');document.body.classList.add('reader-mode');homeView.hidden=true;reader.hidden=true;searchView.hidden=false;$('searchInfo').textContent=`${hits.length} نتيجة مطابقة لـ «${v}»`;$('results').innerHTML=hits.length?hits.map(h=>`<button class="result" onclick="open(${h.ci})"><strong>المادة ${h.a.n}</strong> <small>— الفصل ${h.ci+1}</small><p>${highlight(h.txt.slice(0,300),v)}${h.txt.length>300?'…':''}</p></button>`).join(''):'<div class="panel empty">لا توجد نتائج مطابقة. جرّب كلمة أخرى مثل: الغياب، المطعم، الحقوق، الهاتف.</div>'}
+function doSearch(v){
+  const raw=v.trim(), q=raw.toLowerCase();
+  if(!q){goHome();return}
+  if(q.length<2){
+    document.body.classList.remove('home-mode');document.body.classList.add('reader-mode');
+    homeView.hidden=true;reader.hidden=true;searchView.hidden=false;
+    $('searchInfo').textContent='اكتب حرفين على الأقل للبحث';
+    $('results').innerHTML='<div class="panel empty">أدخل كلمتين على الأقل لعرض النتائج.</div>';
+    window.scrollTo(0,0); return;
+  }
+  let hits=[];
+  data.forEach((c,ci)=>c.articles.forEach(a=>{
+    const txt=a.lines.join(' ');
+    if(txt.toLowerCase().includes(q)||String(a.n)===q)hits.push({ci,a,txt});
+  }));
+  document.body.classList.remove('home-mode');document.body.classList.add('reader-mode');
+  homeView.hidden=true;reader.hidden=true;searchView.hidden=false;
+  $('searchInfo').textContent=`${hits.length} نتيجة مطابقة لـ «${raw}»`;
+  $('results').innerHTML=hits.length?hits.map(h=>`<button class="result" onclick="open(${h.ci})"><strong>المادة ${h.a.n}</strong> <small>— الفصل ${h.ci+1}</small><p>${highlight(h.txt.slice(0,300),raw)}${h.txt.length>300?'…':''}</p></button>`).join(''):'<div class="panel empty">لا توجد نتائج مطابقة. جرّب كلمة أخرى مثل: الغياب، المطعم، الحقوق، الهاتف.</div>';
+  window.scrollTo(0,0);
+}
 $('q').addEventListener('input',e=>doSearch(e.target.value));$('clear').onclick=()=>{$('q').value='';goHome()};$('home').onclick=goHome;$('close').onclick=goHome;$('bhome').onclick=goHome;$('bsearch').onclick=()=>{$('q').focus();window.scrollTo(0,0)};$('btop').onclick=()=>window.scrollTo(0,0);
 function font(d){let n=+(localStorage.getItem('reg-font')||17)+d;n=Math.max(15,Math.min(21,n));document.documentElement.style.setProperty('--font',n+'px');localStorage.setItem('reg-font',n)}$('larger').onclick=()=>font(1);$('smaller').onclick=()=>font(-1);if(localStorage.getItem('reg-font'))document.documentElement.style.setProperty('--font',localStorage.getItem('reg-font')+'px');
 $('theme').onclick=()=>{document.body.classList.toggle('dark');localStorage.setItem('reg-dark',document.body.classList.contains('dark')?'1':'0');$('theme').textContent=document.body.classList.contains('dark')?'☀':'☾'};if(localStorage.getItem('reg-dark')==='1'){$('theme').textContent='☀';document.body.classList.add('dark')}
-let deferred=null;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;$('install').hidden=false});$('install').onclick=async()=>{if(!deferred)return;deferred.prompt();await deferred.userChoice;deferred=null;$('install').hidden=true};
+let deferred=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;const b=$('installApp');if(b)b.hidden=false;});
+async function installPWA(){
+  if(deferred){
+    deferred.prompt();
+    try{await deferred.userChoice}catch(e){}
+    deferred=null;
+    const b=$('installApp');if(b)b.hidden=true;
+    return;
+  }
+  alert('إذا لم تظهر نافذة التثبيت، افتح قائمة المتصفح ⋮ ثم اختر «إضافة إلى الشاشة الرئيسية» أو «تثبيت التطبيق».');
+}
+$('installApp').onclick=installPWA;
+$('install').onclick=installPWA;
 if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('service-worker.js'));document.body.classList.add('home-mode');render();
 </script>
 
@@ -741,49 +798,5 @@ if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serv
 </script>
 
 
-<script>
-/* ===== PWA INSTALL HANDLER ===== */
-(function(){
-  let deferredPrompt = null;
-  const btn = () => document.getElementById('installApp');
-
-  function isStandalone(){
-    return window.matchMedia('(display-mode: standalone)').matches ||
-           window.navigator.standalone === true;
-  }
-
-  function refreshInstallButton(){
-    const b = btn();
-    if (!b) return;
-    b.hidden = isStandalone() || !deferredPrompt;
-  }
-
-  window.addEventListener('beforeinstallprompt', function(e){
-    e.preventDefault();
-    deferredPrompt = e;
-    refreshInstallButton();
-  });
-
-  window.addEventListener('appinstalled', function(){
-    deferredPrompt = null;
-    refreshInstallButton();
-  });
-
-  document.addEventListener('DOMContentLoaded', function(){
-    const b = btn();
-    if (!b) return;
-    b.addEventListener('click', async function(){
-      if (!deferredPrompt) return;
-      deferredPrompt.prompt();
-      try { await deferredPrompt.userChoice; } catch(e) {}
-      deferredPrompt = null;
-      refreshInstallButton();
-    });
-    refreshInstallButton();
-  });
-
-  window.addEventListener('pageshow', refreshInstallButton);
-})();
-</script>
 
 </body></html>
