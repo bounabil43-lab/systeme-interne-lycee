@@ -1,0 +1,11 @@
+{
+  "name": "النظام الداخلي — ثانوية معركة 11 فيفري 1960 تصافت",
+  "short_name": "النظام الداخلي",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f5f8fa",
+  "theme_color": "#1769aa",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": []
+}
