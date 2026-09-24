@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0b6673">
 <meta name="description" content="النسخة الرقمية للنظام الداخلي للمؤسسة">
 <link rel="manifest" href="manifest.json">
-<title>النظام الداخلي | ثانوية معركة 11 فيفري 1960 تصافت</title>
+<title>النظام الداخلي الموحد</title>
 <style>
 :root{--bg:#f3f7f8;--card:#fff;--soft:#f7fafb;--text:#17313c;--muted:#71828a;--line:#e1eaed;--primary:#0b6673;--secondary:#1d8a72;--shadow:0 10px 32px rgba(15,62,78,.08);--radius:22px;--font:17px}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:"Tajawal","Cairo","Segoe UI",Tahoma,Arial,sans-serif;font-size:var(--font);line-height:1.9}button,input{font:inherit}button{cursor:pointer}
@@ -918,14 +918,14 @@ $('install').onclick=installPWA;
 if('serviceWorker' in navigator){
   window.addEventListener('load', async ()=>{
     try{
-      const reg=await navigator.serviceWorker.register('service-worker.js?v=36',{updateViaCache:'none'});
+      const reg=await navigator.serviceWorker.register('service-worker.js?v=37',{updateViaCache:'none'});
       await reg.update();
     }catch(e){}
   });
   let reloaded=false;
   navigator.serviceWorker.addEventListener('controllerchange',()=>{
-    if(reloaded || sessionStorage.getItem('sw36-reloaded')) return;
-    reloaded=true; sessionStorage.setItem('sw36-reloaded','1'); location.reload();
+    if(reloaded || sessionStorage.getItem('sw37-reloaded')) return;
+    reloaded=true; sessionStorage.setItem('sw37-reloaded','1'); location.reload();
   });
 }
 document.body.classList.add('home-mode');
