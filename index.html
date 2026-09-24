@@ -781,7 +781,7 @@ body.reader-mode #reader{padding-bottom:30px!important}
 </style>
 </head>
 <body>
-<header class="hero"><img class="hero-banner" src="school-banner.png" alt="خلفية المؤسسة"><div class="hero-inner"><div class="home-brand" aria-label="هوية النظام"><div class="brand-line">الجمهورية الجزائرية الديمقراطية الشعبية</div><div class="brand-line">وزارة التربية الوطنية</div><div class="brand-title">النظام الداخلي الموحد</div><div class="brand-subtitle">لمؤسسات التربية والتعليم</div></div><div class="hero-tools"><button class="round" id="theme" aria-label="المظهر">☾</button></div></div></header>
+<header class="hero"><img class="hero-banner" src="school-banner.png" alt="خلفية المؤسسة"><div class="hero-inner"><div class="home-brand" aria-label="هوية النظام"><div class="institution-mark"><span class="algeria-flag" role="img" aria-label="علم الجزائر">☪</span><div class="identity-copy"><div class="brand-kicker">الجمهورية الجزائرية الديمقراطية الشعبية</div><div class="brand-ministry">وزارة التربية الوطنية</div></div></div><div class="brand-title">النظام الداخلي الموحد</div><div class="brand-subtitle">لمؤسسات التربية والتعليم</div></div></div></header>
 <main class="wrap">
 <section class="panel tools"><div class="search"><span class="search-icon">⌕</span><input id="q" type="search" placeholder="ابحث عن مادة أو كلمة أو موضوع…" autocomplete="off"><button class="clear" id="clear">×</button></div><div class="actions"><button class="btn primary" id="home">⌂ الفصول</button><button class="btn" id="install" hidden>＋ تثبيت التطبيق</button><button class="btn" id="smaller">A− تصغير النص</button><button class="btn" id="larger">A＋ تكبير النص</button></div></section>
 <section id="homeView"><div class="heading"><div><h2>فصول النظام الداخلي</h2><p>وصول سريع ومنظم إلى المواد الخمس والخمسين</p></div><span class="pill">55 مادة</span></div><button id="installApp" class="install-app" type="button">تثبيت التطبيق</button>
@@ -867,7 +867,6 @@ $('clear').onclick=()=>{$('q').value='';clearTimeout(searchTimer);goHome()};
 $('home').onclick=goHome;$('close').onclick=goHome;$('bhome').onclick=goHome;$('bsearch').onclick=()=>{$('q').focus()};
 $('btop').onclick=scrollReaderTop;
 function font(d){let n=+(localStorage.getItem('reg-font')||17)+d;n=Math.max(15,Math.min(21,n));document.documentElement.style.setProperty('--font',n+'px');localStorage.setItem('reg-font',n)}$('larger').onclick=()=>font(1);$('smaller').onclick=()=>font(-1);if(localStorage.getItem('reg-font'))document.documentElement.style.setProperty('--font',localStorage.getItem('reg-font')+'px');
-$('theme').onclick=()=>{document.body.classList.toggle('dark');localStorage.setItem('reg-dark',document.body.classList.contains('dark')?'1':'0');$('theme').textContent=document.body.classList.contains('dark')?'☀':'☾'};if(localStorage.getItem('reg-dark')==='1'){$('theme').textContent='☀';document.body.classList.add('dark')}
 let deferred=null;
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;const b=$('installApp');if(b)b.hidden=false;});
 async function installPWA(){
@@ -885,14 +884,14 @@ $('install').onclick=installPWA;
 if('serviceWorker' in navigator){
   window.addEventListener('load', async ()=>{
     try{
-      const reg=await navigator.serviceWorker.register('service-worker.js?v=32',{updateViaCache:'none'});
+      const reg=await navigator.serviceWorker.register('service-worker.js?v=33',{updateViaCache:'none'});
       await reg.update();
     }catch(e){}
   });
   let reloaded=false;
   navigator.serviceWorker.addEventListener('controllerchange',()=>{
-    if(reloaded || sessionStorage.getItem('sw32-reloaded')) return;
-    reloaded=true; sessionStorage.setItem('sw32-reloaded','1'); location.reload();
+    if(reloaded || sessionStorage.getItem('sw33-reloaded')) return;
+    reloaded=true; sessionStorage.setItem('sw33-reloaded','1'); location.reload();
   });
 }
 document.body.classList.add('home-mode');
@@ -904,6 +903,72 @@ $('readerTop').onclick=()=>{scrollReaderTop();};
 
 <style id="v26-final-mobile-cards">
 /* ===== V26 CLEAN MOBILE HOME ===== */
+body.home-mode .home-brand{
+  position:absolute!important;
+  top:2vh!important;
+  left:12px!important;
+  right:12px!important;
+  z-index:20!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  gap:5px!important;
+  text-align:center!important;
+}
+.home-brand .institution-mark{
+  display:flex!important;
+  align-items:center!important;
+  gap:10px!important;
+  width:min(100%,560px)!important;
+  padding:7px 12px!important;
+  background:rgba(255,255,255,.9)!important;
+  border:1px solid rgba(255,255,255,.95)!important;
+  border-radius:12px!important;
+  box-shadow:0 7px 20px rgba(6,42,63,.16)!important;
+}
+.home-brand .algeria-flag{
+  width:42px!important;
+  height:28px!important;
+  flex:0 0 42px!important;
+  display:grid!important;
+  place-items:center!important;
+  overflow:hidden!important;
+  border:1px solid rgba(0,0,0,.16)!important;
+  border-radius:4px!important;
+  background:linear-gradient(90deg,#007a3d 0 50%,#fff 50%)!important;
+  color:#d21034!important;
+  font-family:Arial,sans-serif!important;
+  font-size:22px!important;
+  line-height:1!important;
+  text-shadow:0 0 1px #fff!important;
+}
+.home-brand .identity-copy{min-width:0!important;flex:1!important;}
+.home-brand .brand-kicker,
+.home-brand .brand-ministry{margin:0!important;color:#123c52!important;font-weight:800!important;line-height:1.25!important;}
+.home-brand .brand-kicker{font-size:clamp(10px,1.7vw,14px)!important;}
+.home-brand .brand-ministry{margin-top:2px!important;font-size:clamp(11px,1.9vw,16px)!important;color:#08715b!important;}
+body.home-mode .home-brand .brand-title{
+  width:auto!important;
+  margin:0!important;
+  padding:6px 16px!important;
+  border-radius:10px!important;
+  background:rgba(255,255,255,.9)!important;
+  border:1px solid rgba(255,255,255,.95)!important;
+  box-shadow:0 6px 16px rgba(6,42,63,.13)!important;
+  color:#af1822!important;
+  font-size:clamp(20px,3.6vw,34px)!important;
+  font-weight:950!important;
+  line-height:1.12!important;
+  text-shadow:none!important;
+}
+body.home-mode .home-brand .brand-subtitle{
+  color:#123c52!important;
+  font-size:clamp(11px,2vw,16px)!important;
+  font-weight:800!important;
+  line-height:1.2!important;
+  text-shadow:0 1px 2px rgba(255,255,255,.9)!important;
+}
+
 @media (max-width:700px){
   body.home-mode .tools{
     display:block!important;
