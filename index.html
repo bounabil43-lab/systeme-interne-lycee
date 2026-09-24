@@ -868,30 +868,56 @@ $('home').onclick=goHome;$('close').onclick=goHome;$('bhome').onclick=goHome;$('
 $('btop').onclick=scrollReaderTop;
 function font(d){let n=+(localStorage.getItem('reg-font')||17)+d;n=Math.max(15,Math.min(21,n));document.documentElement.style.setProperty('--font',n+'px');localStorage.setItem('reg-font',n)}$('larger').onclick=()=>font(1);$('smaller').onclick=()=>font(-1);if(localStorage.getItem('reg-font'))document.documentElement.style.setProperty('--font',localStorage.getItem('reg-font')+'px');
 let deferred=null;
-window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;const b=$('installApp');if(b)b.hidden=false;});
+const isStandalone=()=>window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
+const isSecureApp=()=>window.isSecureContext||location.hostname==='localhost'||location.hostname==='127.0.0.1';
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();
+  deferred=e;
+  const b=$('installApp');
+  if(b){b.hidden=false;b.disabled=false;}
+});
+window.addEventListener('appinstalled',()=>{
+  deferred=null;
+  const b=$('installApp');
+  if(b){b.textContent='تم تثبيت التطبيق';b.disabled=true;}
+});
 async function installPWA(){
-  if(deferred){
-    deferred.prompt();
-    try{await deferred.userChoice}catch(e){}
-    deferred=null;
-    const b=$('installApp');if(b)b.hidden=true;
+  const b=$('installApp');
+  if(isStandalone()){
+    if(b){b.textContent='التطبيق مثبت';b.disabled=true;}
     return;
   }
-  alert('للتثبيت: افتح قائمة المتصفح ⋮ ثم اختر «إضافة إلى الشاشة الرئيسية» أو «تثبيت التطبيق».');
+  if(deferred){
+    deferred.prompt();
+    try{
+      const choice=await deferred.userChoice;
+      if(choice&&choice.outcome==='accepted'&&b)b.hidden=true;
+    }catch(e){}
+    deferred=null;
+    return;
+  }
+  const isiOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
+  if(isiOS){
+    alert('للتثبيت على iPhone أو iPad: اضغط زر المشاركة في Safari، ثم اختر «إضافة إلى الشاشة الرئيسية».');
+  }else if(!isSecureApp()){
+    alert('لتثبيت التطبيق، افتحه من رابط HTTPS. لا يمكن التثبيت عند فتح ملف index.html مباشرة.');
+  }else{
+    alert('التثبيت غير متاح الآن من المتصفح. افتح قائمة المتصفح ⋮ ثم اختر «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية».');
+  }
 }
 $('installApp').onclick=installPWA;
 $('install').onclick=installPWA;
 if('serviceWorker' in navigator){
   window.addEventListener('load', async ()=>{
     try{
-      const reg=await navigator.serviceWorker.register('service-worker.js?v=34',{updateViaCache:'none'});
+      const reg=await navigator.serviceWorker.register('service-worker.js?v=35',{updateViaCache:'none'});
       await reg.update();
     }catch(e){}
   });
   let reloaded=false;
   navigator.serviceWorker.addEventListener('controllerchange',()=>{
-    if(reloaded || sessionStorage.getItem('sw34-reloaded')) return;
-    reloaded=true; sessionStorage.setItem('sw34-reloaded','1'); location.reload();
+    if(reloaded || sessionStorage.getItem('sw35-reloaded')) return;
+    reloaded=true; sessionStorage.setItem('sw35-reloaded','1'); location.reload();
   });
 }
 document.body.classList.add('home-mode');
