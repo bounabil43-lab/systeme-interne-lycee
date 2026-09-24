@@ -674,6 +674,62 @@ body.reader-mode #reader{padding-bottom:30px!important}
   body.home-mode #chapters .chapter h3{font-size:clamp(10px,2.8vw,14px)!important;line-height:1.2!important;padding:0 3px!important;max-height:2.45em!important;}
   body.home-mode #chapters .chapter .num{width:18px!important;height:18px!important;font-size:8px!important;top:3px!important;left:3px!important;}
 }
+
+/* ===== V23 FINAL FIX ===== */
+@media(max-width:700px){
+  /* Larger chapter cards: about 1.6x–1.7x the previous mobile height, without overlap. */
+  body.home-mode #chapters{
+    top:27vh !important;
+    bottom:7vh !important;
+    padding:0 0.7vw !important;
+    row-gap:0.6vh !important;
+    grid-template-rows:repeat(5, minmax(0,1fr)) !important;
+  }
+  body.home-mode #chapters .chapter{
+    height:12vh !important;
+    max-height:12vh !important;
+    min-height:0 !important;
+    padding:8px 6px !important;
+    border-radius:13px !important;
+    overflow:visible !important;
+    z-index:25 !important;
+    touch-action:manipulation !important;
+  }
+  body.home-mode #chapters .chapter h3{
+    font-size:clamp(11px,3.15vw,16px) !important;
+    line-height:1.28 !important;
+    max-height:3em !important;
+    overflow:hidden !important;
+  }
+  body.home-mode #chapters .chapter .num{
+    width:21px !important;height:21px !important;
+    font-size:9px !important;top:4px !important;left:4px !important;
+  }
+
+  /* Reader must be a normal scrolling document on touch devices. */
+  body.reader-mode{
+    position:static !important;
+    overflow-y:auto !important;
+    height:auto !important;
+    min-height:100vh !important;
+    touch-action:pan-y !important;
+  }
+  body.reader-mode .wrap{
+    position:relative !important;
+    height:auto !important;
+    min-height:100vh !important;
+    overflow:visible !important;
+    touch-action:pan-y !important;
+  }
+  body.reader-mode #reader,
+  body.reader-mode #articles,
+  body.reader-mode .article{
+    overflow:visible !important;
+    max-height:none !important;
+    touch-action:pan-y !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -698,7 +754,7 @@ function parse(){let out=[],c=null,a=null;for(const raw of sourceLines){const li
 const data=parse();
 const $=x=>document.getElementById(x);const homeView=$('homeView'),searchView=$('searchView'),reader=$('reader');
 function esc(s){return s.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-function render(){const el=$('chapters');el.innerHTML='';data.forEach((c,i)=>{const info=chapterInfo[i];const title=c.full.trim();const b=document.createElement('button');b.className='chapter';b.innerHTML=`<div class="chapter-top"><span class="num">${i+1}</span></div><h3>${esc(title)}</h3>`;b.onclick=()=>open(i);el.appendChild(b)})}
+function render(){const el=$('chapters');el.innerHTML='';data.forEach((c,i)=>{const title=c.full.trim();const b=document.createElement('button');b.type='button';b.className='chapter';b.setAttribute('data-chapter-index',String(i));b.innerHTML=`<div class="chapter-top"><span class="num">${i+1}</span></div><h3>${esc(title)}</h3>`;el.appendChild(b)});el.onclick=function(e){const b=e.target.closest('.chapter');if(!b)return;const i=Number(b.getAttribute('data-chapter-index'));if(Number.isInteger(i)){e.preventDefault();e.stopPropagation();open(i)}};el.addEventListener('touchend',function(e){const b=e.target.closest('.chapter');if(!b)return;const i=Number(b.getAttribute('data-chapter-index'));if(Number.isInteger(i)){e.preventDefault();e.stopPropagation();open(i)}},{passive:false})}
 function unlockPageScroll(){
   document.documentElement.style.setProperty('overflow-y','auto','important');
   document.documentElement.style.setProperty('height','auto','important');
@@ -724,7 +780,8 @@ function open(i){
   $('reader').setAttribute('data-chapter-index',String(i));
   $('articles').innerHTML=c.articles.map((a,ai)=>`<article class="article" id="article-${a.n}"><div class="article-head"><span class="article-number">${a.n}</span><span>المادة ${a.n}</span></div><div class="article-body">${a.lines.map((x,j)=>{const bullet=/^[*•]/.test(x);return `<p class="${bullet?'bullet':''}">${esc(x.replace(/^[*•]\s*/,''))}</p>`}).join('')}</div></article>`).join('')+`<div class="reader-nav"><button id="prevChapter" onclick="open(${Math.max(0,i-1)})" ${i===0?'disabled':''}>→ الفصل السابق</button><button id="nextChapter" onclick="open(${Math.min(data.length-1,i+1)})" ${i===data.length-1?'disabled':''}>الفصل التالي ←</button></div>`;
   homeView.hidden=true;searchView.hidden=true;reader.hidden=false;
-  requestAnimationFrame(()=>{unlockPageScroll();scrollReaderTop();});
+  reader.style.display='block';
+  requestAnimationFrame(()=>{unlockPageScroll();scrollReaderTop();setTimeout(scrollReaderTop,60);});
 }
 function goHome(){
   resetHomeScroll();
@@ -760,7 +817,7 @@ $('q').addEventListener('input',e=>{
   const value=e.target.value;
   clearTimeout(searchTimer);
   if(!value.trim()){goHome();return;}
-  searchTimer=setTimeout(()=>doSearch(value),700);
+  searchTimer=setTimeout(()=>doSearch(value),6000);
 });
 $('q').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();clearTimeout(searchTimer);doSearch(e.target.value);}});
 $('clear').onclick=()=>{$('q').value='';clearTimeout(searchTimer);goHome()};
@@ -785,18 +842,19 @@ $('install').onclick=installPWA;
 if('serviceWorker' in navigator){
   window.addEventListener('load', async ()=>{
     try{
-      const reg=await navigator.serviceWorker.register('service-worker.js?v=22',{updateViaCache:'none'});
+      const reg=await navigator.serviceWorker.register('service-worker.js?v=23',{updateViaCache:'none'});
       await reg.update();
     }catch(e){}
   });
   let reloaded=false;
   navigator.serviceWorker.addEventListener('controllerchange',()=>{
-    if(reloaded || sessionStorage.getItem('sw22-reloaded')) return;
-    reloaded=true; sessionStorage.setItem('sw22-reloaded','1'); location.reload();
+    if(reloaded || sessionStorage.getItem('sw23-reloaded')) return;
+    reloaded=true; sessionStorage.setItem('sw23-reloaded','1'); location.reload();
   });
 }
 document.body.classList.add('home-mode');
 render();
+$('chapters').style.pointerEvents='auto';
 const installButton=$('installApp'); if(installButton) installButton.hidden=false;
 $('readerTop').onclick=()=>{scrollReaderTop();};
 </script>
