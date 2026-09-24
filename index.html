@@ -735,6 +735,46 @@ body.reader-mode #reader{padding-bottom:30px!important}
   body.home-mode #chapters .chapter{height:10vh!important;max-height:10vh!important;min-height:52px!important;pointer-events:auto!important;cursor:pointer!important;touch-action:manipulation!important;}
   body.home-mode #chapters .chapter h3{font-size:clamp(10.5px,3vw,15px)!important;line-height:1.25!important;}
 }
+
+/* ===== V25 FINAL CHAPTER CARDS ===== */
+@media (max-width:700px){
+  body.home-mode #chapters{
+    display:grid !important;
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:8px !important;
+    width:100% !important;
+    padding:8px 2px 4px !important;
+    overflow:visible !important;
+    align-items:stretch !important;
+  }
+  body.home-mode #chapters .chapter{
+    width:100% !important;
+    min-width:0 !important;
+    max-width:none !important;
+    height:58px !important;
+    min-height:58px !important;
+    max-height:58px !important;
+    margin:0 !important;
+    padding:8px 9px !important;
+    border-radius:13px !important;
+    display:flex !important;
+    flex-direction:column !important;
+    justify-content:center !important;
+    align-items:stretch !important;
+    text-align:right !important;
+    pointer-events:auto !important;
+    touch-action:manipulation !important;
+    -webkit-tap-highlight-color:transparent !important;
+  }
+  body.home-mode #chapters .chapter-top{margin:0 0 2px !important;height:18px !important;}
+  body.home-mode #chapters .num{width:20px !important;height:20px !important;border-radius:6px !important;font-size:10px !important;}
+  body.home-mode #chapters .chapter h3{font-size:13px !important;line-height:1.25 !important;font-weight:900 !important;margin:0 !important;white-space:normal !important;overflow:hidden !important;display:-webkit-box !important;-webkit-line-clamp:2 !important;-webkit-box-orient:vertical !important;}
+}
+@media (min-width:701px){
+  #chapters{display:grid !important;grid-template-columns:repeat(3,minmax(0,1fr)) !important;gap:12px !important;}
+  #chapters .chapter{min-height:70px !important;}
+}
+
 </style>
 </head>
 <body>
@@ -936,5 +976,31 @@ $('readerTop').onclick=()=>{scrollReaderTop();};
 </script>
 
 
+
+
+<script>
+/* ===== V25 GUARANTEED CARD OPEN ===== */
+(function(){
+  function openCard(card){
+    var idx=Number(card.getAttribute('data-chapter-index'));
+    if(!Number.isInteger(idx)) return;
+    try{
+      if(typeof openChapter==='function'){ openChapter(idx); return; }
+    }catch(err){}
+    try{ if(typeof window.openChapter==='function'){ window.openChapter(idx); } }catch(err){}
+  }
+  document.addEventListener('pointerup',function(e){
+    var card=e.target.closest ? e.target.closest('#chapters .chapter') : null;
+    if(card){ e.preventDefault(); openCard(card); }
+  },true);
+  document.addEventListener('click',function(e){
+    var card=e.target.closest ? e.target.closest('#chapters .chapter') : null;
+    if(card){ e.preventDefault(); openCard(card); }
+  },true);
+  window.addEventListener('load',function(){
+    try{ if(typeof openChapter==='function') window.openChapter=openChapter; }catch(err){}
+  });
+})();
+</script>
 
 </body></html>
