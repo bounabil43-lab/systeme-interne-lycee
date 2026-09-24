@@ -883,6 +883,14 @@ window.addEventListener('appinstalled',()=>{
 });
 async function installPWA(){
   const b=$('installApp');
+  const showInstallHelp=message=>{
+    if(b&&!b.disabled){
+      const label=b.textContent;
+      b.textContent='افتحه عبر رابط HTTPS';
+      window.setTimeout(()=>{if(!b.disabled)b.textContent=label;},3500);
+    }
+    alert(message);
+  };
   if(isStandalone()){
     if(b){b.textContent='التطبيق مثبت';b.disabled=true;}
     return;
@@ -898,11 +906,11 @@ async function installPWA(){
   }
   const isiOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
   if(isiOS){
-    alert('للتثبيت على iPhone أو iPad: اضغط زر المشاركة في Safari، ثم اختر «إضافة إلى الشاشة الرئيسية».');
+    showInstallHelp('للتثبيت على iPhone أو iPad: اضغط زر المشاركة في Safari، ثم اختر «إضافة إلى الشاشة الرئيسية».');
   }else if(!isSecureApp()){
-    alert('لتثبيت التطبيق، افتحه من رابط HTTPS. لا يمكن التثبيت عند فتح ملف index.html مباشرة.');
+    showInstallHelp('لتثبيت التطبيق، افتحه من رابط HTTPS. لا يمكن التثبيت عند فتح ملف index.html مباشرة.');
   }else{
-    alert('التثبيت غير متاح الآن من المتصفح. افتح قائمة المتصفح ⋮ ثم اختر «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية».');
+    showInstallHelp('التثبيت غير متاح الآن من المتصفح. افتح قائمة المتصفح ⋮ ثم اختر «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية».');
   }
 }
 $('installApp').onclick=installPWA;
@@ -910,14 +918,14 @@ $('install').onclick=installPWA;
 if('serviceWorker' in navigator){
   window.addEventListener('load', async ()=>{
     try{
-      const reg=await navigator.serviceWorker.register('service-worker.js?v=35',{updateViaCache:'none'});
+      const reg=await navigator.serviceWorker.register('service-worker.js?v=36',{updateViaCache:'none'});
       await reg.update();
     }catch(e){}
   });
   let reloaded=false;
   navigator.serviceWorker.addEventListener('controllerchange',()=>{
-    if(reloaded || sessionStorage.getItem('sw35-reloaded')) return;
-    reloaded=true; sessionStorage.setItem('sw35-reloaded','1'); location.reload();
+    if(reloaded || sessionStorage.getItem('sw36-reloaded')) return;
+    reloaded=true; sessionStorage.setItem('sw36-reloaded','1'); location.reload();
   });
 }
 document.body.classList.add('home-mode');
@@ -940,6 +948,13 @@ body.home-mode .home-brand{
   align-items:center!important;
   gap:5px!important;
   text-align:center!important;
+}
+body.home-mode #homeView{pointer-events:auto!important;}
+body.home-mode #installApp{
+  pointer-events:auto!important;
+  touch-action:manipulation!important;
+  cursor:pointer!important;
+  z-index:60!important;
 }
 .home-brand .institution-mark{
   display:flex!important;
