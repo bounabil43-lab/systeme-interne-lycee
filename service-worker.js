@@ -1,4 +1,4 @@
-const CACHE='school-regulation-v31';
+const CACHE='school-regulation-v32';
 const ASSETS=['./index.html','./manifest.json','./service-worker.js','./icon-192.png','./icon-512.png','./school-banner.png'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('school-regulation-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));

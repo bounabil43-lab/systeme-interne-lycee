@@ -885,14 +885,14 @@ $('install').onclick=installPWA;
 if('serviceWorker' in navigator){
   window.addEventListener('load', async ()=>{
     try{
-      const reg=await navigator.serviceWorker.register('service-worker.js?v=31',{updateViaCache:'none'});
+      const reg=await navigator.serviceWorker.register('service-worker.js?v=32',{updateViaCache:'none'});
       await reg.update();
     }catch(e){}
   });
   let reloaded=false;
   navigator.serviceWorker.addEventListener('controllerchange',()=>{
-    if(reloaded || sessionStorage.getItem('sw31-reloaded')) return;
-    reloaded=true; sessionStorage.setItem('sw31-reloaded','1'); location.reload();
+    if(reloaded || sessionStorage.getItem('sw32-reloaded')) return;
+    reloaded=true; sessionStorage.setItem('sw32-reloaded','1'); location.reload();
   });
 }
 document.body.classList.add('home-mode');
@@ -904,13 +904,43 @@ $('readerTop').onclick=()=>{scrollReaderTop();};
 
 <style id="v26-final-mobile-cards">
 /* ===== V26 CLEAN MOBILE HOME ===== */
-#install,
-#installApp{display:none!important;}
-
 @media (max-width:700px){
+  body.home-mode .tools{
+    display:block!important;
+    position:absolute!important;
+    top:22vh!important;
+    left:12px!important;
+    right:12px!important;
+    z-index:50!important;
+    padding:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+    pointer-events:auto!important;
+  }
+  body.home-mode .search,
+  body.home-mode .search input{display:block!important;}
+  body.home-mode .search input{
+    width:100%!important;
+    height:44px!important;
+    background:rgba(255,255,255,.94)!important;
+    color:#17313c!important;
+  }
+  body.home-mode #installApp{
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    position:absolute!important;
+    top:27.2vh!important;
+    left:50%!important;
+    right:auto!important;
+    transform:translateX(-50%)!important;
+    min-height:34px!important;
+    padding:6px 16px!important;
+    z-index:50!important;
+  }
   body.home-mode #chapters{
     position:absolute!important;
-    top:29vh!important;
+    top:34vh!important;
     bottom:11vh!important;
     left:12px!important; right:auto!important;
     width:calc(100vw - 24px)!important; height:auto!important;
@@ -946,6 +976,8 @@ $('readerTop').onclick=()=>{scrollReaderTop();};
     cursor:pointer!important;
     box-shadow:0 5px 14px rgba(0,0,0,.20)!important;
   }
+  body.home-mode #chapters .chapter-top,
+  body.home-mode #chapters .num{display:none!important;}
   body.home-mode #chapters .chapter:nth-child(1){grid-column:1!important;grid-row:1!important}
   body.home-mode #chapters .chapter:nth-child(2){grid-column:1!important;grid-row:2!important}
   body.home-mode #chapters .chapter:nth-child(3){grid-column:1!important;grid-row:3!important}
@@ -958,7 +990,7 @@ $('readerTop').onclick=()=>{scrollReaderTop();};
   body.home-mode #chapters .chapter h3{
     width:100%!important;
     margin:0!important;
-    padding:0 3px!important;
+    padding:0!important;
     color:#fff!important;
     font-size:clamp(10px,2.8vw,12px)!important;
     line-height:1.25!important;
